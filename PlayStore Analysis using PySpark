@@ -1,0 +1,1064 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "fd9b97cf",
+   "metadata": {
+    "papermill": {
+     "duration": 0.006712,
+     "end_time": "2024-10-24T17:57:59.972214",
+     "exception": false,
+     "start_time": "2024-10-24T17:57:59.965502",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Install Necessary Package"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "123125fc",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-10-24T17:57:59.986058Z",
+     "iopub.status.busy": "2024-10-24T17:57:59.985636Z",
+     "iopub.status.idle": "2024-10-24T17:58:47.297308Z",
+     "shell.execute_reply": "2024-10-24T17:58:47.295807Z"
+    },
+    "papermill": {
+     "duration": 47.32152,
+     "end_time": "2024-10-24T17:58:47.299811",
+     "exception": false,
+     "start_time": "2024-10-24T17:57:59.978291",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Collecting pyspark\r\n",
+      "  Downloading pyspark-3.5.3.tar.gz (317.3 MB)\r\n",
+      "\u001b[2K     \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m317.3/317.3 MB\u001b[0m \u001b[31m5.0 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25h  Preparing metadata (setup.py) ... \u001b[?25l-\b \b\\\b \bdone\r\n",
+      "\u001b[?25hRequirement already satisfied: py4j==0.10.9.7 in /opt/conda/lib/python3.10/site-packages (from pyspark) (0.10.9.7)\r\n",
+      "Building wheels for collected packages: pyspark\r\n",
+      "  Building wheel for pyspark (setup.py) ... \u001b[?25l-\b \b\\\b \b|\b \bdone\r\n",
+      "\u001b[?25h  Created wheel for pyspark: filename=pyspark-3.5.3-py2.py3-none-any.whl size=317840629 sha256=3f84ba5aef125fe42b22fc8557218cead4dd488f4f50c4d55e26f4251b53c54b\r\n",
+      "  Stored in directory: /root/.cache/pip/wheels/1b/3a/92/28b93e2fbfdbb07509ca4d6f50c5e407f48dce4ddbda69a4ab\r\n",
+      "Successfully built pyspark\r\n",
+      "Installing collected packages: pyspark\r\n",
+      "Successfully installed pyspark-3.5.3\r\n",
+      "Note: you may need to restart the kernel to use updated packages.\n"
+     ]
+    }
+   ],
+   "source": [
+    "pip install pyspark"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "adff9939",
+   "metadata": {
+    "papermill": {
+     "duration": 0.013321,
+     "end_time": "2024-10-24T17:58:47.327445",
+     "exception": false,
+     "start_time": "2024-10-24T17:58:47.314124",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Import dependencies"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "afba0fc1",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-10-24T17:58:47.356292Z",
+     "iopub.status.busy": "2024-10-24T17:58:47.355728Z",
+     "iopub.status.idle": "2024-10-24T17:58:47.458297Z",
+     "shell.execute_reply": "2024-10-24T17:58:47.457391Z"
+    },
+    "papermill": {
+     "duration": 0.119897,
+     "end_time": "2024-10-24T17:58:47.460735",
+     "exception": false,
+     "start_time": "2024-10-24T17:58:47.340838",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "import pyspark\n",
+    "from pyspark.sql import SparkSession\n",
+    "from pyspark.sql.types import StructType, StructField, StringType, IntegerType\n",
+    "from pyspark.sql.functions import *"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "876742a9",
+   "metadata": {
+    "papermill": {
+     "duration": 0.012742,
+     "end_time": "2024-10-24T17:58:47.487112",
+     "exception": false,
+     "start_time": "2024-10-24T17:58:47.474370",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Create Spark Session"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "7d709c0e",
+   "metadata": {
+    "collapsed": true,
+    "execution": {
+     "iopub.execute_input": "2024-10-24T17:58:47.514883Z",
+     "iopub.status.busy": "2024-10-24T17:58:47.514270Z",
+     "iopub.status.idle": "2024-10-24T17:58:52.518534Z",
+     "shell.execute_reply": "2024-10-24T17:58:52.517369Z"
+    },
+    "jupyter": {
+     "outputs_hidden": true
+    },
+    "papermill": {
+     "duration": 5.021004,
+     "end_time": "2024-10-24T17:58:52.521139",
+     "exception": false,
+     "start_time": "2024-10-24T17:58:47.500135",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Setting default log level to \"WARN\".\n",
+      "To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).\n",
+      "24/10/24 17:58:50 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable\n"
+     ]
+    }
+   ],
+   "source": [
+    "spark = SparkSession.builder \\\n",
+    "    .appName(\"Google Play Store Analysis\") \\\n",
+    "    .getOrCreate()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7b58951f",
+   "metadata": {
+    "papermill": {
+     "duration": 0.012922,
+     "end_time": "2024-10-24T17:58:52.547338",
+     "exception": false,
+     "start_time": "2024-10-24T17:58:52.534416",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Load CSV/file"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "f970ca86",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-10-24T17:58:52.575355Z",
+     "iopub.status.busy": "2024-10-24T17:58:52.574948Z",
+     "iopub.status.idle": "2024-10-24T17:58:59.915321Z",
+     "shell.execute_reply": "2024-10-24T17:58:59.914011Z"
+    },
+    "papermill": {
+     "duration": 7.357851,
+     "end_time": "2024-10-24T17:58:59.918357",
+     "exception": false,
+     "start_time": "2024-10-24T17:58:52.560506",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "df = spark.read.load('/kaggle/input/googleplaystore/googleplaystore.csv',format='csv',sep=',',header='true',escape='\"',inferschema='true')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "4884fb11",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-10-24T17:58:59.962713Z",
+     "iopub.status.busy": "2024-10-24T17:58:59.961625Z",
+     "iopub.status.idle": "2024-10-24T17:59:00.769535Z",
+     "shell.execute_reply": "2024-10-24T17:59:00.768319Z"
+    },
+    "papermill": {
+     "duration": 0.833319,
+     "end_time": "2024-10-24T17:59:00.772484",
+     "exception": false,
+     "start_time": "2024-10-24T17:58:59.939165",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "10841"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.count()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "75be5876",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-10-24T17:59:00.817249Z",
+     "iopub.status.busy": "2024-10-24T17:59:00.816718Z",
+     "iopub.status.idle": "2024-10-24T17:59:01.307049Z",
+     "shell.execute_reply": "2024-10-24T17:59:01.306172Z"
+    },
+    "papermill": {
+     "duration": 0.516831,
+     "end_time": "2024-10-24T17:59:01.310145",
+     "exception": false,
+     "start_time": "2024-10-24T17:59:00.793314",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+--------------------+--------------+------+-------+----+--------+----+-----+--------------+------------+---------------+-----------+------------+\n",
+      "|                 App|      Category|Rating|Reviews|Size|Installs|Type|Price|Content Rating|      Genres|   Last Updated|Current Ver| Android Ver|\n",
+      "+--------------------+--------------+------+-------+----+--------+----+-----+--------------+------------+---------------+-----------+------------+\n",
+      "|Photo Editor & Ca...|ART_AND_DESIGN|   4.1|    159| 19M| 10,000+|Free|    0|      Everyone|Art & Design|January 7, 2018|      1.0.0|4.0.3 and up|\n",
+      "+--------------------+--------------+------+-------+----+--------+----+-----+--------------+------------+---------------+-----------+------------+\n",
+      "only showing top 1 row\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "df.show(1)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a74d1e52",
+   "metadata": {
+    "papermill": {
+     "duration": 0.020232,
+     "end_time": "2024-10-24T17:59:01.351263",
+     "exception": false,
+     "start_time": "2024-10-24T17:59:01.331031",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Check Table Schema"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "49ca75d6",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-10-24T17:59:01.395149Z",
+     "iopub.status.busy": "2024-10-24T17:59:01.393863Z",
+     "iopub.status.idle": "2024-10-24T17:59:01.404712Z",
+     "shell.execute_reply": "2024-10-24T17:59:01.403668Z"
+    },
+    "papermill": {
+     "duration": 0.035728,
+     "end_time": "2024-10-24T17:59:01.407256",
+     "exception": false,
+     "start_time": "2024-10-24T17:59:01.371528",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "root\n",
+      " |-- App: string (nullable = true)\n",
+      " |-- Category: string (nullable = true)\n",
+      " |-- Rating: double (nullable = true)\n",
+      " |-- Reviews: string (nullable = true)\n",
+      " |-- Size: string (nullable = true)\n",
+      " |-- Installs: string (nullable = true)\n",
+      " |-- Type: string (nullable = true)\n",
+      " |-- Price: string (nullable = true)\n",
+      " |-- Content Rating: string (nullable = true)\n",
+      " |-- Genres: string (nullable = true)\n",
+      " |-- Last Updated: string (nullable = true)\n",
+      " |-- Current Ver: string (nullable = true)\n",
+      " |-- Android Ver: string (nullable = true)\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "df.printSchema()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "36b03e01",
+   "metadata": {
+    "papermill": {
+     "duration": 0.020434,
+     "end_time": "2024-10-24T17:59:01.448521",
+     "exception": false,
+     "start_time": "2024-10-24T17:59:01.428087",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Data Cleaning"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "ca0b19fa",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-10-24T17:59:01.492798Z",
+     "iopub.status.busy": "2024-10-24T17:59:01.491914Z",
+     "iopub.status.idle": "2024-10-24T17:59:01.525439Z",
+     "shell.execute_reply": "2024-10-24T17:59:01.524171Z"
+    },
+    "papermill": {
+     "duration": 0.058979,
+     "end_time": "2024-10-24T17:59:01.528421",
+     "exception": false,
+     "start_time": "2024-10-24T17:59:01.469442",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "df = df.drop(\"Size\", \"Content Rating\", \"Last Updated\", \"Android Ver\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "6053c9c8",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-10-24T17:59:01.563688Z",
+     "iopub.status.busy": "2024-10-24T17:59:01.562682Z",
+     "iopub.status.idle": "2024-10-24T17:59:01.825627Z",
+     "shell.execute_reply": "2024-10-24T17:59:01.824470Z"
+    },
+    "papermill": {
+     "duration": 0.279948,
+     "end_time": "2024-10-24T17:59:01.828145",
+     "exception": false,
+     "start_time": "2024-10-24T17:59:01.548197",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+--------------------+--------------+------+-------+--------+----+-----+--------------------+-----------+\n",
+      "|                 App|      Category|Rating|Reviews|Installs|Type|Price|              Genres|Current Ver|\n",
+      "+--------------------+--------------+------+-------+--------+----+-----+--------------------+-----------+\n",
+      "|Photo Editor & Ca...|ART_AND_DESIGN|   4.1|    159| 10,000+|Free|    0|        Art & Design|      1.0.0|\n",
+      "| Coloring book moana|ART_AND_DESIGN|   3.9|    967|500,000+|Free|    0|Art & Design;Pret...|      2.0.0|\n",
+      "+--------------------+--------------+------+-------+--------+----+-----+--------------------+-----------+\n",
+      "only showing top 2 rows\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "df.show(2)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "f067ef01",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-10-24T17:59:01.857357Z",
+     "iopub.status.busy": "2024-10-24T17:59:01.856731Z",
+     "iopub.status.idle": "2024-10-24T17:59:01.875147Z",
+     "shell.execute_reply": "2024-10-24T17:59:01.873978Z"
+    },
+    "papermill": {
+     "duration": 0.036101,
+     "end_time": "2024-10-24T17:59:01.878115",
+     "exception": false,
+     "start_time": "2024-10-24T17:59:01.842014",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "df = df.drop(\"Current Ver\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "1d9b635c",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-10-24T17:59:01.908207Z",
+     "iopub.status.busy": "2024-10-24T17:59:01.907790Z",
+     "iopub.status.idle": "2024-10-24T17:59:02.157343Z",
+     "shell.execute_reply": "2024-10-24T17:59:02.156210Z"
+    },
+    "papermill": {
+     "duration": 0.26757,
+     "end_time": "2024-10-24T17:59:02.159965",
+     "exception": false,
+     "start_time": "2024-10-24T17:59:01.892395",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+--------------------+--------------+------+-------+--------+----+-----+--------------------+\n",
+      "|                 App|      Category|Rating|Reviews|Installs|Type|Price|              Genres|\n",
+      "+--------------------+--------------+------+-------+--------+----+-----+--------------------+\n",
+      "|Photo Editor & Ca...|ART_AND_DESIGN|   4.1|    159| 10,000+|Free|    0|        Art & Design|\n",
+      "| Coloring book moana|ART_AND_DESIGN|   3.9|    967|500,000+|Free|    0|Art & Design;Pret...|\n",
+      "+--------------------+--------------+------+-------+--------+----+-----+--------------------+\n",
+      "only showing top 2 rows\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "df.show(2)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "938a5279",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-10-24T17:59:02.189503Z",
+     "iopub.status.busy": "2024-10-24T17:59:02.189146Z",
+     "iopub.status.idle": "2024-10-24T17:59:02.195939Z",
+     "shell.execute_reply": "2024-10-24T17:59:02.194868Z"
+    },
+    "papermill": {
+     "duration": 0.024549,
+     "end_time": "2024-10-24T17:59:02.198558",
+     "exception": false,
+     "start_time": "2024-10-24T17:59:02.174009",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "root\n",
+      " |-- App: string (nullable = true)\n",
+      " |-- Category: string (nullable = true)\n",
+      " |-- Rating: double (nullable = true)\n",
+      " |-- Reviews: string (nullable = true)\n",
+      " |-- Installs: string (nullable = true)\n",
+      " |-- Type: string (nullable = true)\n",
+      " |-- Price: string (nullable = true)\n",
+      " |-- Genres: string (nullable = true)\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "df.printSchema()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "ff8ce16f",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-10-24T17:59:02.229188Z",
+     "iopub.status.busy": "2024-10-24T17:59:02.228786Z",
+     "iopub.status.idle": "2024-10-24T17:59:02.387089Z",
+     "shell.execute_reply": "2024-10-24T17:59:02.385915Z"
+    },
+    "papermill": {
+     "duration": 0.17637,
+     "end_time": "2024-10-24T17:59:02.389807",
+     "exception": false,
+     "start_time": "2024-10-24T17:59:02.213437",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "from pyspark.sql.functions import regexp_replace, col\n",
+    "\n",
+    "df = df.withColumn(\"Reviews\",col(\"Reviews\").cast(IntegerType()))\\\n",
+    "    .withColumn(\"Installs\",regexp_replace(col(\"Installs\"),\"[^0-9]\",\"\"))\\\n",
+    "    .withColumn(\"Installs\",col(\"Installs\").cast(IntegerType()))\\\n",
+    "    .withColumn(\"Price\",regexp_replace(col(\"Price\"),\"[$]\",\"\"))\\\n",
+    "    .withColumn(\"Price\",col(\"Price\").cast(IntegerType()))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "7d841508",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-10-24T17:59:02.420201Z",
+     "iopub.status.busy": "2024-10-24T17:59:02.419395Z",
+     "iopub.status.idle": "2024-10-24T17:59:02.701550Z",
+     "shell.execute_reply": "2024-10-24T17:59:02.700546Z"
+    },
+    "papermill": {
+     "duration": 0.299768,
+     "end_time": "2024-10-24T17:59:02.703956",
+     "exception": false,
+     "start_time": "2024-10-24T17:59:02.404188",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+--------------------+--------------+------+-------+--------+----+-----+--------------------+\n",
+      "|                 App|      Category|Rating|Reviews|Installs|Type|Price|              Genres|\n",
+      "+--------------------+--------------+------+-------+--------+----+-----+--------------------+\n",
+      "|Photo Editor & Ca...|ART_AND_DESIGN|   4.1|    159|   10000|Free|    0|        Art & Design|\n",
+      "| Coloring book moana|ART_AND_DESIGN|   3.9|    967|  500000|Free|    0|Art & Design;Pret...|\n",
+      "|U Launcher Lite –...|ART_AND_DESIGN|   4.7|  87510| 5000000|Free|    0|        Art & Design|\n",
+      "+--------------------+--------------+------+-------+--------+----+-----+--------------------+\n",
+      "only showing top 3 rows\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "df.show(3)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "4d77646f",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-10-24T17:59:02.732945Z",
+     "iopub.status.busy": "2024-10-24T17:59:02.732543Z",
+     "iopub.status.idle": "2024-10-24T17:59:02.780717Z",
+     "shell.execute_reply": "2024-10-24T17:59:02.779613Z"
+    },
+    "papermill": {
+     "duration": 0.065587,
+     "end_time": "2024-10-24T17:59:02.783318",
+     "exception": false,
+     "start_time": "2024-10-24T17:59:02.717731",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "df.createOrReplaceTempView(\"apps\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "id": "b59de240",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-10-24T17:59:02.813339Z",
+     "iopub.status.busy": "2024-10-24T17:59:02.812972Z",
+     "iopub.status.idle": "2024-10-24T17:59:03.050813Z",
+     "shell.execute_reply": "2024-10-24T17:59:03.049774Z"
+    },
+    "papermill": {
+     "duration": 0.256147,
+     "end_time": "2024-10-24T17:59:03.053530",
+     "exception": false,
+     "start_time": "2024-10-24T17:59:02.797383",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+--------------------+--------------+------+-------+--------+----+-----+--------------------+\n",
+      "|                 App|      Category|Rating|Reviews|Installs|Type|Price|              Genres|\n",
+      "+--------------------+--------------+------+-------+--------+----+-----+--------------------+\n",
+      "|Photo Editor & Ca...|ART_AND_DESIGN|   4.1|    159|   10000|Free|    0|        Art & Design|\n",
+      "| Coloring book moana|ART_AND_DESIGN|   3.9|    967|  500000|Free|    0|Art & Design;Pret...|\n",
+      "|U Launcher Lite –...|ART_AND_DESIGN|   4.7|  87510| 5000000|Free|    0|        Art & Design|\n",
+      "|Sketch - Draw & P...|ART_AND_DESIGN|   4.5| 215644|50000000|Free|    0|        Art & Design|\n",
+      "|Pixel Draw - Numb...|ART_AND_DESIGN|   4.3|    967|  100000|Free|    0|Art & Design;Crea...|\n",
+      "|Paper flowers ins...|ART_AND_DESIGN|   4.4|    167|   50000|Free|    0|        Art & Design|\n",
+      "|Smoke Effect Phot...|ART_AND_DESIGN|   3.8|    178|   50000|Free|    0|        Art & Design|\n",
+      "|    Infinite Painter|ART_AND_DESIGN|   4.1|  36815| 1000000|Free|    0|        Art & Design|\n",
+      "|Garden Coloring Book|ART_AND_DESIGN|   4.4|  13791| 1000000|Free|    0|        Art & Design|\n",
+      "|Kids Paint Free -...|ART_AND_DESIGN|   4.7|    121|   10000|Free|    0|Art & Design;Crea...|\n",
+      "|Text on Photo - F...|ART_AND_DESIGN|   4.4|  13880| 1000000|Free|    0|        Art & Design|\n",
+      "|Name Art Photo Ed...|ART_AND_DESIGN|   4.4|   8788| 1000000|Free|    0|        Art & Design|\n",
+      "|Tattoo Name On My...|ART_AND_DESIGN|   4.2|  44829|10000000|Free|    0|        Art & Design|\n",
+      "|Mandala Coloring ...|ART_AND_DESIGN|   4.6|   4326|  100000|Free|    0|        Art & Design|\n",
+      "|3D Color Pixel by...|ART_AND_DESIGN|   4.4|   1518|  100000|Free|    0|        Art & Design|\n",
+      "|Learn To Draw Kaw...|ART_AND_DESIGN|   3.2|     55|    5000|Free|    0|        Art & Design|\n",
+      "|Photo Designer - ...|ART_AND_DESIGN|   4.7|   3632|  500000|Free|    0|        Art & Design|\n",
+      "|350 Diy Room Deco...|ART_AND_DESIGN|   4.5|     27|   10000|Free|    0|        Art & Design|\n",
+      "|FlipaClip - Carto...|ART_AND_DESIGN|   4.3| 194216| 5000000|Free|    0|        Art & Design|\n",
+      "|        ibis Paint X|ART_AND_DESIGN|   4.6| 224399|10000000|Free|    0|        Art & Design|\n",
+      "+--------------------+--------------+------+-------+--------+----+-----+--------------------+\n",
+      "only showing top 20 rows\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "result_df = spark.sql(\"SELECT * FROM apps\")\n",
+    "\n",
+    "result_df.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b936ed56",
+   "metadata": {
+    "papermill": {
+     "duration": 0.013563,
+     "end_time": "2024-10-24T17:59:03.081328",
+     "exception": false,
+     "start_time": "2024-10-24T17:59:03.067765",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Top 10 reviews given to the apps"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "id": "8396af97",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-10-24T17:59:03.110848Z",
+     "iopub.status.busy": "2024-10-24T17:59:03.110412Z",
+     "iopub.status.idle": "2024-10-24T17:59:04.197989Z",
+     "shell.execute_reply": "2024-10-24T17:59:04.196796Z"
+    },
+    "papermill": {
+     "duration": 1.105695,
+     "end_time": "2024-10-24T17:59:04.200907",
+     "exception": false,
+     "start_time": "2024-10-24T17:59:03.095212",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+--------------------+------------+\n",
+      "|                 App|sum(Reviews)|\n",
+      "+--------------------+------------+\n",
+      "|           Instagram|   266241989|\n",
+      "|  WhatsApp Messenger|   207348304|\n",
+      "|      Clash of Clans|   179558781|\n",
+      "|Messenger – Text ...|   169932272|\n",
+      "|      Subway Surfers|   166331958|\n",
+      "|    Candy Crush Saga|   156993136|\n",
+      "|            Facebook|   156286514|\n",
+      "|         8 Ball Pool|    99386198|\n",
+      "|        Clash Royale|    92530298|\n",
+      "|            Snapchat|    68045010|\n",
+      "+--------------------+------------+\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "query1 = \"\"\"\n",
+    "SELECT\n",
+    "    App,\n",
+    "    SUM(Reviews)\n",
+    "FROM\n",
+    "    apps\n",
+    "GROUP BY\n",
+    "    App\n",
+    "ORDER BY \n",
+    "    SUM(Reviews) DESC\n",
+    "LIMIT 10;\n",
+    "    \"\"\"\n",
+    "\n",
+    "result_df = spark.sql(query1)\n",
+    "result_df.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ca50bf63",
+   "metadata": {
+    "papermill": {
+     "duration": 0.013734,
+     "end_time": "2024-10-24T17:59:04.229960",
+     "exception": false,
+     "start_time": "2024-10-24T17:59:04.216226",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Top 10 Installed Apps"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "0cf9dee5",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-10-24T17:59:04.273026Z",
+     "iopub.status.busy": "2024-10-24T17:59:04.272572Z",
+     "iopub.status.idle": "2024-10-24T17:59:05.114427Z",
+     "shell.execute_reply": "2024-10-24T17:59:05.113392Z"
+    },
+    "papermill": {
+     "duration": 0.867449,
+     "end_time": "2024-10-24T17:59:05.117478",
+     "exception": false,
+     "start_time": "2024-10-24T17:59:04.250029",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+------------------+----+-------------+\n",
+      "|               App|Type|sum(Installs)|\n",
+      "+------------------+----+-------------+\n",
+      "|    Subway Surfers|Free|   6000000000|\n",
+      "|         Instagram|Free|   4000000000|\n",
+      "|      Google Drive|Free|   4000000000|\n",
+      "|          Hangouts|Free|   4000000000|\n",
+      "|     Google Photos|Free|   4000000000|\n",
+      "|       Google News|Free|   4000000000|\n",
+      "|  Candy Crush Saga|Free|   3500000000|\n",
+      "|WhatsApp Messenger|Free|   3000000000|\n",
+      "|             Gmail|Free|   3000000000|\n",
+      "|      Temple Run 2|Free|   3000000000|\n",
+      "+------------------+----+-------------+\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "query2 = \"\"\"\n",
+    "SELECT\n",
+    "    App,\n",
+    "    Type,\n",
+    "    SUM(Installs)\n",
+    "FROM\n",
+    "    apps\n",
+    "GROUP BY\n",
+    "    App,\n",
+    "    Type\n",
+    "ORDER BY \n",
+    "    SUM(Installs) DESC\n",
+    "LIMIT 10;\n",
+    "    \"\"\"\n",
+    "\n",
+    "result_df = spark.sql(query2)\n",
+    "result_df.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5fe0ccab",
+   "metadata": {
+    "papermill": {
+     "duration": 0.015105,
+     "end_time": "2024-10-24T17:59:05.148316",
+     "exception": false,
+     "start_time": "2024-10-24T17:59:05.133211",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Category wise distribution of installed apps"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "id": "08f41952",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-10-24T17:59:05.178342Z",
+     "iopub.status.busy": "2024-10-24T17:59:05.177545Z",
+     "iopub.status.idle": "2024-10-24T17:59:05.653933Z",
+     "shell.execute_reply": "2024-10-24T17:59:05.652681Z"
+    },
+    "papermill": {
+     "duration": 0.494103,
+     "end_time": "2024-10-24T17:59:05.656442",
+     "exception": false,
+     "start_time": "2024-10-24T17:59:05.162339",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+------------------+-------------+\n",
+      "|          Category|sum(Installs)|\n",
+      "+------------------+-------------+\n",
+      "|              GAME|  35086024415|\n",
+      "|     COMMUNICATION|  32647276251|\n",
+      "|      PRODUCTIVITY|  14176091369|\n",
+      "|            SOCIAL|  14069867902|\n",
+      "|             TOOLS|  11452771915|\n",
+      "|            FAMILY|  10258263505|\n",
+      "|       PHOTOGRAPHY|  10088247655|\n",
+      "|NEWS_AND_MAGAZINES|   7496317760|\n",
+      "|  TRAVEL_AND_LOCAL|   6868887146|\n",
+      "|     VIDEO_PLAYERS|   6222002720|\n",
+      "+------------------+-------------+\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "query3 = \"\"\"\n",
+    "SELECT\n",
+    "    Category,\n",
+    "    SUM(Installs)\n",
+    "FROM\n",
+    "    apps\n",
+    "GROUP BY\n",
+    "    1\n",
+    "ORDER BY \n",
+    "    2 DESC\n",
+    "LIMIT 10;\n",
+    "    \"\"\"\n",
+    "\n",
+    "result_df = spark.sql(query3)\n",
+    "result_df.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "299d55d3",
+   "metadata": {
+    "papermill": {
+     "duration": 0.013854,
+     "end_time": "2024-10-24T17:59:05.685536",
+     "exception": false,
+     "start_time": "2024-10-24T17:59:05.671682",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Top paid apps"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "id": "b20883f5",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-10-24T17:59:05.715313Z",
+     "iopub.status.busy": "2024-10-24T17:59:05.714939Z",
+     "iopub.status.idle": "2024-10-24T17:59:06.299375Z",
+     "shell.execute_reply": "2024-10-24T17:59:06.298294Z"
+    },
+    "papermill": {
+     "duration": 0.602784,
+     "end_time": "2024-10-24T17:59:06.302501",
+     "exception": false,
+     "start_time": "2024-10-24T17:59:05.699717",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+--------------------+----------+\n",
+      "|                 App|sum(Price)|\n",
+      "+--------------------+----------+\n",
+      "|I'm Rich - Trump ...|       400|\n",
+      "|most expensive ap...|       399|\n",
+      "|  I am rich(premium)|       399|\n",
+      "|   I Am Rich Premium|       399|\n",
+      "|      I am Rich Plus|       399|\n",
+      "|I'm Rich/Eu sou R...|       399|\n",
+      "|       I Am Rich Pro|       399|\n",
+      "|  I AM RICH PRO PLUS|       399|\n",
+      "|           I am Rich|       399|\n",
+      "|          I am Rich!|       399|\n",
+      "+--------------------+----------+\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "query4 = \"\"\"\n",
+    "SELECT\n",
+    "    App,\n",
+    "    SUM(Price)\n",
+    "FROM (\n",
+    "    SELECT \n",
+    "        *\n",
+    "    FROM\n",
+    "        apps\n",
+    "    WHERE\n",
+    "        Type = 'Paid'\n",
+    ")\n",
+    "GROUP BY\n",
+    "    1\n",
+    "ORDER BY \n",
+    "    2 DESC\n",
+    "LIMIT 10;\n",
+    "    \"\"\"\n",
+    "\n",
+    "result_df = spark.sql(query4)\n",
+    "result_df.show()"
+   ]
+  }
+ ],
+ "metadata": {
+  "kaggle": {
+   "accelerator": "none",
+   "dataSources": [
+    {
+     "datasetId": 5941800,
+     "sourceId": 9713344,
+     "sourceType": "datasetVersion"
+    }
+   ],
+   "dockerImageVersionId": 30786,
+   "isGpuEnabled": false,
+   "isInternetEnabled": true,
+   "language": "python",
+   "sourceType": "notebook"
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.14"
+  },
+  "papermill": {
+   "default_parameters": {},
+   "duration": 71.533122,
+   "end_time": "2024-10-24T17:59:08.945940",
+   "environment_variables": {},
+   "exception": null,
+   "input_path": "__notebook__.ipynb",
+   "output_path": "__notebook__.ipynb",
+   "parameters": {},
+   "start_time": "2024-10-24T17:57:57.412818",
+   "version": "2.6.0"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
